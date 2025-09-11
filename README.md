@@ -13,11 +13,13 @@
 - **Course**: Data Intensive Computing  
 - **Date**: 13th September 2025  
 
-## Problem Statement
+## Goal Of Project 
+Develop a big data pipeline to time series forecast NYC yellow taxi demand using scalable storage, processing, and machine learning tools. We will feature engineer the target variable to be demand per hour for a given location.  
 
 
 ## Dataset
-The dataset can be found on [Kaggle](https://www.kaggle.com/elemento/nyc-yellow-taxi-trip-data). It contains information about NYC Yellow Taxi trips, including pickup and dropoff locations, timestamps, and trip distances, for the months Jan 2015, Jan 2016, Feb 2016 & March 2016.
+The dataset can be found on Kaggle ([https://www.kaggle.com/elemento/nyc-yellow-taxi-trip-datale](https://www.kaggle.com/elemento/nyc-yellow-taxi-trip-data)). 
+It contains information about NYC Yellow Taxi trips, including pickup and dropoff locations, timestamps, and trip distances, for the months Jan 2015, Jan 2016, Feb 2016 & March 2016.
 
 ### Features in the Dataset
 <table border="1">
@@ -130,5 +132,16 @@ The dataset can be found on [Kaggle](https://www.kaggle.com/elemento/nyc-yellow-
 	</tr>
 </table>
 
-## Acknowledgments
-This work is inspired by the **Applied AI Course**. Special thanks to the entire team of Applied AI for their guidance and resources.
+## Tools & Metholodolgy
+We propose the following pipeline. 
+
+ **HDFS:** Store raw NYC Yellow Taxi CSV files for distributed access.  
+- **PySpark:** Clean data, filter outliers, extract time/location features, and aggregate demand.  
+- **Pyspark ML** Train scalable regression models with lag and calendar features.  
+- **Apache Cassandra:** Save forecasts keyed by zone and timestamp for fast retrieval.  
+- **Matplotlib or Plotly:** Plot actual vs. predicted demand curves for evaluation.   
+
+## Presentation of Work 
+
+- The coding project will be published in [Github](https://github.com/dasiemens-coder/NYC-yellow-cab.git) and made publicly available after submission deadline. 
+- Additionally, the project and report will be uploaded on Canvas according to the guidelines. 
