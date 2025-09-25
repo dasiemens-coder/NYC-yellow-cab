@@ -75,6 +75,6 @@ if __name__ == "__main__":
     pred.select("zone_id","ts_hour","pickups_d","prediction") \
         .orderBy("zone_id","ts_hour") \
         .write.mode("overwrite").parquet(pred_out)
-    model.save(model_out)
+    model.write().overwrite().save(model_out)
 
     spark.stop()

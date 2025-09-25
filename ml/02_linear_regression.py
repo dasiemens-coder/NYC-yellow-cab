@@ -57,6 +57,6 @@ if __name__ == "__main__":
 
     # salva predizioni e modello
     pred.write.mode("overwrite").parquet(f"data/predictions/lr_{month_u}")
-    model.save(f"data/models/lr_{month_u}")
+    model.write().overwrite().save(f"data/models/lr_{month_u}")
 
     spark.stop()

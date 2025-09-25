@@ -10,6 +10,7 @@ def norm_month(s: str) -> tuple[str, str]:
     return s.replace("-", "_"), s
 
 def main():
+    # TODO: by default the script processes January 2015 data, but you can specify a different month as a command-line argument. Lets mention that in todo. Otherwise commands in todo fail
     # Parametro mese (default: 2015_01)
     month_arg = sys.argv[1] if len(sys.argv) > 1 else "2015_01"
     month_u, month_d = norm_month(month_arg)
