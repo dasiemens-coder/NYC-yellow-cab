@@ -1,4 +1,5 @@
 1. instructions to run with description of args 
 2. Remove zone code?
 3. Kafka 
-3. Cassandra for storage of outputs
+4. Cassandra for storage of outputs
+5. Do one script that runs the whole pipeline

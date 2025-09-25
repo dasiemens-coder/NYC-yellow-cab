@@ -32,6 +32,7 @@ def main():
     # 1) Leggi silver
     df = spark.read.parquet(in_path)
 
+    # TODO: This part is a bit too obviously AI generated
     # 2) Trova colonne pickup timestamp e zona (varianti comuni)
     pickup_candidates = [
         "tpep_pickup_datetime", "pickup_datetime", "pickup_datetime_ts"
