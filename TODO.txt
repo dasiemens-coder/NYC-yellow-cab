@@ -1,0 +1,4 @@
+1. instructions to run with description of args 
+2. Remove zone code?
+3. Kafka 
+3. Cassandra for storage of outputs
