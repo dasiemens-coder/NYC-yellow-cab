@@ -1,51 +1,70 @@
-# Data-Intensive Computing Project Proposal: 
-# Time Series Prediciton On NYC Caps 
+# NYC Yellow Cab — Demand Forecasting with PySpark
 
-## Group
-**Dream_Team_v2**
-- **Xiya Sun**
-- **Silvia Pasini**
-- **Lijie Li**
-- **Davis Siemens**
+This project implements an **end-to-end pipeline** in PySpark to forecast hourly taxi demand in New York City.  
+It covers data ingestion, feature engineering (including lag and rolling features), and machine learning models (baseline, Linear Regression, Random Forest).  
+Future integration with **Apache Kafka** will allow real-time streaming of demand data.
 
-## Institution
-- **KTH**  
-- **Course**: Data Intensive Computing  
-- **Date**: 13th September 2025  
+---
 
-## Goal Of Project 
-Develop a big data pipeline to time series forecast NYC yellow taxi demand using scalable storage, processing, and machine learning tools. We will feature engineer the target variable to be demand per hour for a given location.  
+## Project structure
 
+---
 
-## Dataset
-The dataset can be found on Kaggle ([https://www.kaggle.com/elemento/nyc-yellow-taxi-trip-data](https://www.kaggle.com/elemento/nyc-yellow-taxi-trip-data)).
-It contains information about NYC Yellow Taxi trips, including pickup and dropoff locations, timestamps, and trip distances, for the months Jan 2015, Jan 2016, Feb 2016 & March 2016 (approx. 2GB per Month).
+## Data
+- Source: [NYC TLC Trip Record Data](https://www.nyc.gov/assets/tlc/pages/about/tlc-trip-record-data.page)  
+- Format: Parquet  
+- Period used: January 2015, January–March 2016 (for cross-month evaluation)  
 
-### Attributes ###
+---
 
-- **VendorID:** Provider code (Creative Mobile Technologies or VeriFone).  
-- **Pickup/Dropoff datetime:** Start and end times of the trip.  
-- **Passenger_count:** Number of passengers (driver-entered).  
-- **Trip_distance:** Distance in miles from the taximeter.  
-- **Pickup/Dropoff coordinates:** Latitude and longitude of trip start/end.  
-- **RateCodeID:** Fare type (e.g., standard, JFK, Newark, negotiated).  
-- **Store_and_fwd_flag:** Whether trip was stored before transmission (Y/N).  
-- **Payment_type:** How passenger paid (card, cash, no charge, dispute, etc.).  
-- **Fare_amount / Extras / MTA_tax / Surcharge:** Meter fare and surcharges.  
-- **Tip_amount / Tolls_amount:** Tips (card only) and tolls.  
-- **Total_amount:** Final charged amount (excl. cash tips).  
+## ETL pipeline
+1. **00_fetch_raw.py** — downloads raw parquet files  
+2. **01_ingest.py** — ingests raw → silver (cleaned parquet)  
+3. **02_build_fact.py** — aggregates trips → hourly pickups per zone  
+4. **03_build_features.py** — adds calendar features (hour, day of week, weekend flag)  
+5. **04_build_lag_features.py** — adds lag features (1, 24, 168 hours) and rolling averages  
 
+Output:  
+- **silver/** → cleaned raw  
+- **fact/** → demand per zone/hour  
+- **gold/** → fact + calendar features  
+- **gold_lag/** → gold + lag/rolling features  
 
-## Tools & Metholodolgy
-We propose the following pipeline. 
+---
 
-- **HDFS:** Store raw NYC Yellow Taxi CSV files for distributed access.  
-- **PySpark:** Clean data, filter outliers, extract time/location features, and aggregate demand.  
-- **Pyspark ML** Train scalable regression models with lag and calendar features.  
-- **Apache Cassandra:** Save forecasts keyed by zone and timestamp for fast retrieval.  
-- **Matplotlib or Plotly:** Plot actual vs. predicted demand curves for evaluation.   
+## Machine Learning
+Scripts in `ml/`:
 
-## Presentation of Work 
+- **01_baseline_naive.py**: naïve lag-24 baseline  
+- **02_linear_regression.py**: Linear Regression with lag + calendar + rolling  
+- **03_random_forest.py**: Random Forest Regressor with same features  
 
-- The coding project will be published in [Github](https://github.com/dasiemens-coder/NYC-yellow-cab.git) and made publicly available after submission deadline. 
-- Additionally, the project and report will be uploaded on Canvas according to the guidelines. 
+Metric: **RMSE** (root mean squared error)  
+Models show clear improvement over the baseline.  
+Feature importance (RF) confirms `lag1`, `lag24`, `lag168` as the strongest predictors.
+
+---
+
+## Visualization
+Use `viz/plot_predictions.py` to visualize actual vs predicted demand:
+
+```bash
+python viz/plot_predictions.py rf 2015_01 237
+python viz/plot_predictions.py lr 2016_03 132
+
+##Typical workflow (example for January 2015):
+
+# ETL
+python etl/00_fetch_raw.py 2015_01
+python etl/01_ingest.py 2015_01
+python etl/02_build_fact.py 2015_01
+python etl/03_build_features.py 2015_01
+python etl/04_build_lag_features.py 2015_01
+
+# ML
+python ml/01_baseline_naive.py 2015_01
+python ml/02_linear_regression.py 2015_01
+python ml/03_random_forest.py 2015_01
+
+##Future work KAFKA
+{ "zone_id": 237, "ts_hour": "2016-03-01T10:00:00", "pickups": 125 }
