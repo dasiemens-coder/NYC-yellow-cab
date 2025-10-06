@@ -1,6 +1,6 @@
 import sys
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import RandomForestRegressor
 from pyspark.ml.evaluation import RegressionEvaluator
@@ -48,7 +48,8 @@ if __name__ == "__main__":
         featuresCol="features",
         labelCol="pickups_d",
         numTrees=200,
-        maxDepth=12,
+        #maxDepth=12,
+        maxDepth=1,
         minInstancesPerNode=2,
         subsamplingRate=0.8,
         featureSubsetStrategy="auto",
@@ -76,5 +77,20 @@ if __name__ == "__main__":
         .orderBy("zone_id","ts_hour") \
         .write.mode("overwrite").parquet(pred_out)
     model.write().overwrite().save(model_out)
+    
+    # Persits in Cassandra
+    pred_for_cassandra = (
+    pred.select("zone_id", "ts_hour", "pickups_d", "prediction")
+        .withColumn("ts_hour", col("ts_hour").cast("timestamp"))
+        .withColumn("month", lit(month_u))
+        .select("month", "zone_id", "ts_hour", "pickups_d", "prediction")
+    )   
+
+    pred_for_cassandra.write \
+        .format("org.apache.spark.sql.cassandra") \
+        .options(table="rf_predictions", keyspace="nyctaxi") \
+        .mode("append") \
+        .save()
 
     spark.stop()
+    print("Done")

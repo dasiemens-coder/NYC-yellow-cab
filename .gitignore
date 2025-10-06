@@ -6,4 +6,5 @@ __pycache__/
 .DS_Store
 .env
 ops/cassandra-data/
+.venv/
 venv/
