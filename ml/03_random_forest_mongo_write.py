@@ -1,6 +1,6 @@
 import sys
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
+from pyspark.sql.functions import col, lit
 from pyspark.ml.feature import VectorAssembler
 from pyspark.ml.regression import RandomForestRegressor
 from pyspark.ml.evaluation import RegressionEvaluator
@@ -87,6 +87,22 @@ if __name__ == "__main__":
         .mode("append")
         .option("database", "timeseries_demo")
         .option("collection", "metrics")
+        .save())
+    
+        # 11) Write the predictions (what you saved as Parquet) to MongoDB too
+    (pred.select(
+            "zone_id",
+            "ts_hour",                      # Spark timestamp -> Mongo Date
+            col("pickups_d").alias("y"),    # actual
+            col("prediction").alias("y_hat")
+        )
+        .withColumn("month", lit(month_u))
+        .withColumn("split_q", lit(split_q))
+        .write
+        .format("mongodb")
+        .mode("append")
+        .option("database", "timeseries_demo")
+        .option("collection", "readings_pred")
         .save())
 
     spark.stop()

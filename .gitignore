@@ -8,3 +8,5 @@ __pycache__/
 ops/cassandra-data/
 .venv/
 venv/
+mongo-data/
+mongo-init/
