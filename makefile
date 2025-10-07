@@ -10,8 +10,6 @@ PKG = org.mongodb.spark:mongo-spark-connector_2.12:10.3.0
 # Prefer venv spark-submit if available
 SPARK := $(shell if [ -x .venv/bin/spark-submit ]; then echo .venv/bin/spark-submit; else echo spark-submit; fi)
 
-# Python interpreter (prefer venv)
-PYTHON := $(shell if [ -x .venv/bin/python ]; then echo .venv/bin/python; else echo python; fi)
 
 # ----- Targets -----
 .PHONY: all etl baseline run-lr run-rf ml plot mongo-ping clean help
@@ -22,7 +20,7 @@ all: up mongo-ping etl baseline run-lr run-rf plot
 # ---------- Docker Compose (Mongo) ----------
 up:
 	@echo "==> Starting Docker Compose (Mongo)..."
-	@$(COMPOSE) up -d
+	@docker compose up -d
 	@$(WAIT_FOR_MONGO)
 
 down:
@@ -39,16 +37,16 @@ mongo-ping:
 # ---------- ETL ----------
 etl:
 	@echo "==> Running ETL pipeline for MONTH=$(MONTH)"
-	@$(PYTHON) etl/00_fetch_raw.py $(MONTH)
-	@$(PYTHON) etl/01_ingest.py $(MONTH)
-	@$(PYTHON) etl/02_build_fact.py $(MONTH)
-	@$(PYTHON) etl/03_build_features.py $(MONTH)
-	@$(PYTHON) etl/04_build_lag_features.py $(MONTH)
+	@python etl/00_fetch_raw.py $(MONTH)
+	@python etl/01_ingest.py $(MONTH)
+	@python etl/02_build_fact.py $(MONTH)
+	@python etl/03_build_features.py $(MONTH)
+	@python etl/04_build_lag_features.py $(MONTH)
 
 # ---------- Baseline ----------
 baseline: etl
 	@echo "==> Running Baseline Naive for MONTH=$(MONTH)"
-	@$(PYTHON) ml/01_baseline_naive.py $(MONTH)
+	@python ml/01_baseline_naive.py $(MONTH)
 
 # ---------- ML ----------
 ml: run-lr run-rf
