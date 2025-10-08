@@ -75,16 +75,6 @@ if __name__ == "__main__":
     for name, imp in zip(present, importances):
         print(f"  {name}: {imp:.6f}")
 
-# TODO delete 
-    """ 
-    # 9) Salvataggi Parquet (come prima)
-    pred_out = f"data/predictions/rf_{month_u}"
-    model_out = f"data/models/rf_{month_u}"
-    pred.select("zone_id","ts_hour","pickups_d","prediction") \
-        .orderBy("zone_id","ts_hour") \
-        .write.mode("overwrite").parquet(pred_out)
-    model.write().overwrite().save(model_out) """
-
     # 10) Save ML Metrics in Mongo 
     metrics_df = spark.createDataFrame(
         [(month_u, split_q, float(rmse), "RandomForestRegressor", has_rolling)],

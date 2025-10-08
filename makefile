@@ -60,7 +60,7 @@ run-rf: etl
 	@$(SPARK) --packages $(PKG) ml/03_random_forest_mongo_write.py $(MONTH) $(SPLIT)
 
 # ---------- Viz ----------
-plot: ml
+plot: 
 	@echo "==> Plotting RF vs LR for MONTH=$(MONTH) ZONE=$(ZONE)"
 	@$(SPARK) --packages $(PKG) viz/plot_predictions_mongo.py $(MONTH) $(ZONE)
 

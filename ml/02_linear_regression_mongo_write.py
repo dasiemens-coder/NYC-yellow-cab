@@ -57,12 +57,6 @@ if __name__ == "__main__":
     rmse = evaluator.evaluate(pred)
     print(f"[{month_u}] Linear Regression (calendar+lag{'+rolling' if set(['roll24_mean','roll168_mean']).issubset(set(present)) else ''}) RMSE: {rmse:.2f}")
 
-    # 7) Output (prime righe) e salvataggi Parquet (come prima)
-    pred.select("zone_id","ts_hour","pickups_d","prediction") \
-        .orderBy("zone_id","ts_hour").show(20, truncate=False)
-
-    pred.write.mode("overwrite").parquet(f"data/predictions/lr_{month_u}")
-    model.write().overwrite().save(f"data/models/lr_{month_u}")
 
     # 8) Save Metrics in MongoDB
     metrics_df = spark.createDataFrame(
