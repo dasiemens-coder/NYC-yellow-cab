@@ -2,7 +2,6 @@
 
 This project implements an **end-to-end pipeline** in PySpark to forecast hourly taxi demand in New York City.  
 It covers data ingestion, feature engineering (including lag and rolling features), and machine learning models (baseline, Linear Regression, Random Forest).  
-Future integration with **Apache Kafka** will allow real-time streaming of demand data.
 
 ---
 
@@ -45,26 +44,37 @@ Feature importance (RF) confirms `lag1`, `lag24`, `lag168` as the strongest pred
 
 ---
 
-## Visualization
-Use `viz/plot_predictions.py` to visualize actual vs predicted demand:
+## Persiting and Visualization
+The outputs from `02_linear_regression.py` and `03_random_forest.py` get persisted in MongoDB. To simply the setup, MongoDB runs in a doker container. `viz/plot_predictions.py` then plots the results. 
 
+---
+## Execution Instructions
+
+This project requires **Python 3.13.x**. It is recommended to use a virtual environment for isolation.  
+
+### Prerequisites
+1. Ensure **mongosh** is installed on your machine.  
+2. Verify that **Docker** is running.  
+3. Install the required dependencies by running:  
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+### Makefile Instructions
+
+The project includes a `Makefile` to simplify execution. Below are the details for the `make all` target and the `ZONE` and `MONTH` parameters:
+
+#### `make all`
+This target runs the entire pipeline for a specified month and zone. It includes ETL, feature engineering, and machine learning steps.
+
+#### Parameters
+- `ZONE`: The taxi zone ID for which the pipeline will be executed. (Default `237`)
+    - A description of the zones can be found [here](https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv)
+- `MONTH`: The month in `YYYY_MM` format (Default `2015_01`)
+    - For this project, the valid range is from `2016_01` (January 2016) to `2016_12` (December 2016), and `2015_01` (January 2015). 
+
+#### Example Usage
 ```bash
-python viz/plot_predictions.py rf 2015_01 237
-python viz/plot_predictions.py lr 2016_03 132
-
-##Typical workflow (example for January 2015):
-
-# ETL
-python etl/00_fetch_raw.py 2015_01
-python etl/01_ingest.py 2015_01
-python etl/02_build_fact.py 2015_01
-python etl/03_build_features.py 2015_01
-python etl/04_build_lag_features.py 2015_01
-
-# ML
-python ml/01_baseline_naive.py 2015_01
-python ml/02_linear_regression.py 2015_01
-python ml/03_random_forest.py 2015_01
-
-##Future work KAFKA
-{ "zone_id": 237, "ts_hour": "2016-03-01T10:00:00", "pickups": 125 }
+make all ZONE=237 MONTH=2015_01
+```
+This command runs the pipeline for zone `237` and January 2015.

@@ -114,7 +114,7 @@ def main():
     ax_tbl = fig.add_subplot(gs[1, :])  # bottom spans both columns
 
     # Global header
-    fig.suptitle(f"Zone {zone_id} — {month}", y=0.95, fontsize=14)
+    fig.suptitle(f"Zone: {zone_id}   Month: {month}", y=1.0, fontsize=14)
 
     # Plot 1: time series
     line_true, = ax_ts.plot(pdf["ts_hour"], pdf["y_true"], color="black", label="y_true (actual)")

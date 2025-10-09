@@ -53,16 +53,16 @@ ml: run-lr run-rf
 
 run-lr: etl
 	@echo "==> Running Linear Regression for MONTH=$(MONTH) SPLIT=$(SPLIT)"
-	@$(SPARK) --packages $(PKG) ml/02_linear_regression_mongo_write.py $(MONTH) $(SPLIT)
+	@$(SPARK) --packages $(PKG) ml/02_linear_regression.py $(MONTH) $(SPLIT)
 
 run-rf: etl
 	@echo "==> Running Random Forest for MONTH=$(MONTH) SPLIT=$(SPLIT)"
-	@$(SPARK) --packages $(PKG) ml/03_random_forest_mongo_write.py $(MONTH) $(SPLIT)
+	@$(SPARK) --packages $(PKG) ml/03_random_forest.py $(MONTH) $(SPLIT)
 
 # ---------- Viz ----------
 plot: 
 	@echo "==> Plotting RF vs LR for MONTH=$(MONTH) ZONE=$(ZONE)"
-	@$(SPARK) --packages $(PKG) viz/plot_predictions_mongo.py $(MONTH) $(ZONE)
+	@$(SPARK) --packages $(PKG) viz/plot_predictions.py $(MONTH) $(ZONE)
 
 # ---------- Misc ----------
 mongo-ping:
