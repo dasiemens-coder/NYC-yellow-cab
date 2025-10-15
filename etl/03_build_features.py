@@ -10,7 +10,7 @@ def norm_month(s: str) -> tuple[str, str]:
     return s.replace("-", "_"), s       # ('2015_01','2015-01')
 
 def main():
-    # mese come argomento, default: 2015_01
+    # month as rgument, default: 2015_01
     month_arg = sys.argv[1] if len(sys.argv) > 1 else "2015_01"
     month_u, _ = norm_month(month_arg)
 
@@ -22,7 +22,7 @@ def main():
 
     spark = SparkSession.builder.appName(f"Build Features {month_u}").getOrCreate()
 
-    # Leggi la fact (zone_id, ts_hour, pickups)
+    # read the fact (zone_id, ts_hour, pickups)
     df = spark.read.parquet(in_path)
 
     # Feature base
@@ -30,7 +30,7 @@ def main():
            .withColumn("dow", dayofweek("ts_hour")) \
            .withColumn("is_weekend", when(col("dow").isin(1, 7), 1).otherwise(0))
 
-    # Scrivi il livello gold
+    # write gold level
     df.write.mode("overwrite").parquet(out_path)
     print(f"[OK] Gold scritto in: {out_path}")
 

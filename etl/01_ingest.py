@@ -10,11 +10,11 @@ def norm_month(s: str) -> tuple[str, str]:
     return s.replace("-", "_"), s
 
 def main():
-    # Parametro mese (default: 2015_01)
+    # month parameter (default: 2015_01)
     month_arg = sys.argv[1] if len(sys.argv) > 1 else "2015_01"
     month_u, month_d = norm_month(month_arg)
 
-    # Path input (raw) e output (silver)
+    # Path input (raw) and output (silver)
     in_path  = f"data/raw/yellow_tripdata_{month_d}.parquet"
     out_path = f"data/silver/{month_u}"
 
@@ -23,7 +23,7 @@ def main():
 
     spark = SparkSession.builder.appName(f"NYC Taxi Ingest {month_u}").getOrCreate()
 
-    # Leggi Parquet grezzo
+    # red Parquet raw
     df = spark.read.parquet(in_path)
 
     print("Schema:")
@@ -31,7 +31,7 @@ def main():
     print("Prime 5 righe:")
     df.show(5, truncate=False)
 
-    # Scrivi in silver (formato Spark-friendly)
+    # write in silver (format: Spark-friendly)
     df.write.mode("overwrite").parquet(out_path)
     print(f"[OK] Scritto silver in: {out_path}")
 

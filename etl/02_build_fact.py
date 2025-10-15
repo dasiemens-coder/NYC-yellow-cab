@@ -17,7 +17,7 @@ def pick_col(df, candidates):
     return None
 
 def main():
-    # mese come argomento: 2015_01 o 2015-01
+    # month as argument: 2015_01 or 2015-01
     month_arg = sys.argv[1] if len(sys.argv) > 1 else "2015_01"
     month_u, _ = norm_month(month_arg)
 
@@ -29,11 +29,10 @@ def main():
 
     spark = SparkSession.builder.appName(f"Build Fact Demand {month_u}").getOrCreate()
 
-    # 1) Leggi silver
+    # read silver
     df = spark.read.parquet(in_path)
-
-    # TODO: This part is a bit too obviously AI generated
-    # 2) Trova colonne pickup timestamp e zona (varianti comuni)
+    
+    # Find col pickup timestamp and zone
     pickup_candidates = [
         "tpep_pickup_datetime", "pickup_datetime", "pickup_datetime_ts"
     ]
@@ -49,18 +48,17 @@ def main():
     if zone_col is None:
         raise ValueError(f"[ERR] Colonna zona non trovata. Cercate: {zone_candidates}")
 
-    # 3) Assicurati che il pickup sia Timestamp
     dtype = dict(df.dtypes)[pickup_col]
     if dtype in ("string",) or isinstance(df.schema[pickup_col].dataType, StringType):
         df = df.withColumn(pickup_col, to_timestamp(col(pickup_col)))
 
-    # 4) Arrotonda all’ora e aggrega
+    #round to the hours and aggregate
     df = df.withColumn("ts_hour", date_trunc("hour", col(pickup_col)))
 
     fact = df.groupBy(col(zone_col).alias("zone_id"), col("ts_hour")) \
              .agg(count("*").alias("pickups"))
 
-    # 5) Scrivi fact
+
     fact.write.mode("overwrite").parquet(out_path)
     print(f"[OK] Fact scritto in: {out_path}")
 

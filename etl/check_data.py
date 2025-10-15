@@ -2,11 +2,11 @@ from pyspark.sql import SparkSession
 
 spark = SparkSession.builder.appName("Check Data").getOrCreate()
 
-# leggi raw
+# read raw
 df_raw = spark.read.parquet("data/raw/yellow_tripdata_2015-01.parquet")
 raw_count = df_raw.count()
 
-# leggi silver
+# read silver
 df_silver = spark.read.parquet("data/silver/2015_01")
 silver_count = df_silver.count()
 

@@ -6,12 +6,11 @@ from pyspark.ml.regression import RandomForestRegressor
 from pyspark.ml.evaluation import RegressionEvaluator
 
 def norm_month(s: str) -> str:
-    # ritorna 'YYYY_MM' accettando 'YYYY-MM'
     return s if "_" in s else s.replace("-", "_")
 
 if __name__ == "__main__":
     month_u = norm_month(sys.argv[1] if len(sys.argv) > 1 else "2015_01")
-    split_q = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8  # quantile per cutoff temporale
+    split_q = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8  # quantile per temporal cutoff 
 
     spark = (
         SparkSession.builder
@@ -21,13 +20,13 @@ if __name__ == "__main__":
         .getOrCreate()
     )
 
-    # 1) Carica GOLD_LAG del mese
+    # 1) load GOLD_LAG of the month
     df = spark.read.parquet(f"data/gold_lag/{month_u}")
 
-    # 2) Seleziona le feature (usa solo quelle presenti)
+    # 2) select the features 
     base_features = ["hour","dow","is_weekend","lag1","lag24","lag168","roll24_mean","roll168_mean"]
     present = [c for c in base_features if c in df.columns]
-    # Richiedi almeno le lag principali
+
     for req in ["lag1","lag24","lag168"]:
         if req not in present:
             raise ValueError(f"Manca la colonna obbligatoria {req}. Esegui etl/04_build_lag_features.py")
@@ -38,7 +37,7 @@ if __name__ == "__main__":
     # 3) Label a double
     df = df.withColumn("pickups_d", col("pickups").cast("double"))
 
-    # 4) Split temporale (serve numerico per approxQuantile)
+    # 4) temporal Split 
     df = df.withColumn("ts_long", col("ts_hour").cast("long"))
     cut = df.approxQuantile("ts_long", [split_q], 0.0)[0]
     train = df.filter(col("ts_long") <= cut)
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     )
     model = rf.fit(train_v)
 
-    # 7) Predizioni + RMSE
+    # 7) predictions + RMSE
     pred = model.transform(test_v)
     evaluator = RegressionEvaluator(labelCol="pickups_d", predictionCol="prediction", metricName="rmse")
     rmse = evaluator.evaluate(pred)

@@ -10,9 +10,9 @@ def norm_month(s: str) -> str:
     return s if "_" in s else s.replace("-", "_")
 
 if __name__ == "__main__":
-    # Parametri
+    # parameters
     month_u = norm_month(sys.argv[1] if len(sys.argv) > 1 else "2015_01")
-    split_q = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8  # quantile per il cutoff temporale (0–1)
+    split_q = float(sys.argv[2]) if len(sys.argv) > 2 else 0.8  # quantile for temporal cutoff (0–1)
 
     spark = (
         SparkSession.builder
@@ -22,10 +22,10 @@ if __name__ == "__main__":
         .getOrCreate()
     )
 
-    # 1) Carica GOLD_LAG del mese
+    # 1) load GOLD_LAG of the month
     df = spark.read.parquet(f"data/gold_lag/{month_u}")
 
-    # 2) Seleziona feature disponibili
+    # 2) select available features 
     base_features = ["hour","dow","is_weekend","lag1","lag24","lag168","roll24_mean","roll168_mean"]
     present = [c for c in base_features if c in df.columns]
     if not {"lag1","lag24","lag168"}.issubset(set(present)):
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     # 3) Label a double
     df = df.withColumn("pickups_d", col("pickups").cast("double"))
 
-    # 4) Split temporale (serve numerico)
+    # 4) temporal split
     df = df.withColumn("ts_long", col("ts_hour").cast("long"))
     cut = df.approxQuantile("ts_long", [split_q], 0.0)[0]
     train = df.filter(col("ts_long") <= cut)
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     lr = LinearRegression(featuresCol="features", labelCol="pickups_d")
     model = lr.fit(train_v)
 
-    # 6) Valutazione
+    # 6) evaluation
     pred = model.transform(test_v)
     evaluator = RegressionEvaluator(labelCol="pickups_d", predictionCol="prediction", metricName="rmse")
     rmse = evaluator.evaluate(pred)

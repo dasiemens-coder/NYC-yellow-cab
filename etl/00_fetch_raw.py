@@ -36,7 +36,6 @@ def fetch_month(month_arg: str) -> None:
 
     print(f"[GET ] {url}")
     try:
-        # opzionale: dimensione attesa
         size = head_content_length(url)
         urlretrieve(url, out_path)
         sz = os.path.getsize(out_path)

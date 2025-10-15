@@ -11,7 +11,7 @@ def norm_month(s: str) -> tuple[str, str]:
     return s.replace("-", "_"), s       # ('2015_01','2015-01')
 
 def main():
-    # mese come argomento, default: 2015_01
+    # month as argument, default: 2015_01
     month_arg = sys.argv[1] if len(sys.argv) > 1 else "2015_01"
     month_u, _ = norm_month(month_arg)
 
@@ -31,22 +31,22 @@ def main():
            .withColumn("dow", dayofweek("ts_hour")) \
            .withColumn("is_weekend", when(col("dow").isin(1, 7), 1).otherwise(0))
 
-    # Finestra temporale per zona ordinata nel tempo
+    # temporal window for zone time ordered
     w = Window.partitionBy("zone_id").orderBy("ts_hour")
 
-    # Lag classiche (attenzione: le prime righe per zona saranno null)
+    # classic Lag
     df = df.withColumn("lag1",   lag("pickups", 1).over(w)) \
            .withColumn("lag24",  lag("pickups", 24).over(w)) \
            .withColumn("lag168", lag("pickups", 168).over(w))
 
-    # Rolling mean su finestra mobile chiusa all'osservazione precedente
-    # NB: rowsBetween conta RIGHE, non tempo reale. Se mancano ore, non sono "ultime 24 ore".
+    # Rolling mean on window
+    # NB: rowsBetween count rows, not real time. 
     w24  = w.rowsBetween(-24, -1)
     w168 = w.rowsBetween(-168, -1)
     df = df.withColumn("roll24_mean",  avg("pickups").over(w24)) \
            .withColumn("roll168_mean", avg("pickups").over(w168))
 
-    # Scrivi GOLD_LAG
+    # write GOLD_LAG
     df.write.mode("overwrite").parquet(out_path)
     print(f"[OK] Gold_lag scritto in: {out_path}")
 

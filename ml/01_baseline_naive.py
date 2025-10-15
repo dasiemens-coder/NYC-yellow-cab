@@ -23,7 +23,7 @@ if __name__ == "__main__":
     df = df.withColumn("pickups_d", col("pickups").cast("double")) \
            .withColumn("yhat_d", col("yhat").cast("double"))
 
-    # split temporale
+    # temporal split 
     df = df.withColumn("ts_long", col("ts_hour").cast("long"))
     cut = df.approxQuantile("ts_long", [0.8], 0.0)[0]
     train = df.filter(col("ts_long") <= cut)
