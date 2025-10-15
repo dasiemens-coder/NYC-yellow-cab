@@ -45,7 +45,7 @@ Feature importance (RF) confirms `lag1`, `lag24`, `lag168` as the strongest pred
 ---
 
 ## Persiting and Visualization
-The outputs from `02_linear_regression.py` and `03_random_forest.py` get persisted in MongoDB. To simply the setup, MongoDB runs in a doker container. `viz/plot_predictions.py` then plots the results. 
+The outputs from `02_linear_regression.py` and `03_random_forest.py` get persisted in MongoDB. To simply the setup, MongoDB runs in a docker container. `viz/plot_predictions.py` then plots the results. 
 
 ---
 ## Execution Instructions
