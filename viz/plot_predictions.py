@@ -139,8 +139,8 @@ def main():
 
     # Unified legend (keep actual colors)
     fig.legend(
-        handles=[line_rf, line_lr],
-        labels=["Random Forest (rf)", "Linear Regression (lr)"],
+        handles=[line_true ,line_rf, line_lr],
+        labels=["Y_true" ,"Random Forest (rf)", "Linear Regression (lr)"],
         loc="lower center",
         ncol=2,
         bbox_to_anchor=(0.5, 0.02),
