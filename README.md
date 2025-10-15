@@ -71,8 +71,7 @@ This target runs the entire pipeline for a specified month and zone. It includes
 #### Parameters
 - `ZONE`: The taxi zone ID for which the pipeline will be executed. (Default `237`)
     - A description of the zones can be found [here](https://d37ci6vzurychx.cloudfront.net/misc/taxi_zone_lookup.csv)
-- `MONTH`: The month in `YYYY_MM` format (Default `2015_01`)
-    - For this project, the valid range is from `2016_01` (January 2016) to `2016_12` (December 2016), and `2015_01` (January 2015). 
+- `MONTH`: The month in `YYYY\_MM` format (default: `2015\_01`).  Valid options include: `2015\_01`, or `2016\_01`, `2016\_02`, ...,  `2016\_12`
 
 #### Example Usage
 ```bash
