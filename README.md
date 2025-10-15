@@ -60,9 +60,10 @@ This project requires **Python 3.13.x**. It is recommended to use a virtual envi
     pip install -r requirements.txt
     ```
 
-### Makefile Instructions
+### Run Instructions
 
-The project includes a `Makefile` to simplify execution. Below are the details for the `make all` target and the `ZONE` and `MONTH` parameters:
+The project includes a `Makefile` to simplify execution. Below are the details for the `make all` target and the `ZONE` and `MONTH` parameters. 
+To execute the project please just run the **make all** commant in your **.venv**. Additionally, please open the visualization in **fullscreen** after execution to see all elements. 
 
 #### `make all`
 This target runs the entire pipeline for a specified month and zone. It includes ETL, feature engineering, and machine learning steps.
@@ -75,6 +76,10 @@ This target runs the entire pipeline for a specified month and zone. It includes
 
 #### Example Usage
 ```bash
-make all ZONE=237 MONTH=2015_01
+make all
 ```
 This command runs the pipeline for zone `237` and January 2015.
+```bash
+make all ZONE=230 MONTH=2016_01
+```
+This command runs the pipeline for zone `230` and January 2016.

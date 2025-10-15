@@ -14,7 +14,7 @@ SPARK := $(shell if [ -x .venv/bin/spark-submit ]; then echo .venv/bin/spark-sub
 # ----- Targets -----
 .PHONY: all etl baseline run-lr run-rf ml plot mongo-ping clean help
 
-all: up mongo-ping etl baseline run-lr run-rf plot
+all: up mongo-ping clean etl baseline run-lr run-rf plot
 
 
 # ---------- Docker Compose (Mongo) ----------
